@@ -4,22 +4,67 @@ import firestore from "./firestore";
 
 const db = firestore.firestore();
 
-const addUser = (name) =>
-  name.length > 3
-    ? db.collection("argonautes").add({
-        name: name,
-      })
-    : console.log("minimum 3 caractères");
-
 function App() {
   const [value, setValue] = useState("");
   const [name, setName] = useState("");
   const [data, setData] = useState([]);
+  const [error, setError] = useState(false);
+  const [reload, setReload] = useState(0);
+
   const listArgonautes = data.map((argonaute, key) => (
     <div className="col-4" key={key}>
-      <p className="text-center">{argonaute.name}</p>
+      <p className="text-center">
+        {argonaute.name}
+        <button
+          type="button"
+          className="btn-close"
+          aria-label="Close"
+          onClick={() => suppUser(argonaute.name)}
+          style={{
+            height: "4px",
+            width: "4px",
+            marginLeft: "0.3rem",
+            paddingTop: "0.6rem",
+          }}
+        ></button>
+      </p>
     </div>
   ));
+
+  const suppUser = (name) => {
+    db.collection("argonautes")
+      .where("name", "==", name)
+      .get()
+      .then((docs) => {
+        docs.forEach((doc) => {
+          db.collection("argonautes")
+            .doc(doc.id)
+            .delete()
+            .then(() => {
+              const count = reload + 1;
+              console.log("Document successfully deleted!", name);
+              setReload(count);
+            })
+            .catch((error) => {
+              console.error("Error removing document: ", error);
+            });
+        });
+      })
+      .catch((error) => {
+        console.log("Error getting documents: ", error);
+      });
+  };
+
+  const addUser = (name) => {
+    if (name.length > 3) {
+      db.collection("argonautes").add({
+        name: name,
+      });
+      setError(false);
+    } else {
+      setError(true);
+    }
+  };
 
   useEffect(() => {
     const collecRef = db.collection("argonautes");
@@ -39,7 +84,7 @@ function App() {
       .catch((error) => {
         console.log("Error getting document:", error);
       });
-  }, [name]);
+  }, [name, reload]);
 
   return (
     <div>
@@ -53,7 +98,7 @@ function App() {
         </h1>
       </header>
 
-      <main className="container">
+      <main className="container" style={{ marginTop: "3rem" }}>
         <h2>Ajouter un(e) Argonaute</h2>
         <div className="new-member-form">
           <label>Nom de l&apos;Argonaute</label>
@@ -65,6 +110,7 @@ function App() {
             value={value}
             onChange={(e) => setValue(e.target.value)}
           />
+          {error ? <p>minimum 3 caractères</p> : <p></p>}
           <button
             onClick={() => {
               setName(value);
@@ -77,7 +123,10 @@ function App() {
         </div>
 
         <h2>Membres de l'équipage</h2>
-        <div className="member-list row justify-content-start">
+        <div
+          className="member-list row justify-content-start"
+          style={{ marginTop: "5rem" }}
+        >
           {listArgonautes}
         </div>
       </main>
