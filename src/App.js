@@ -89,10 +89,11 @@ function App() {
   return (
     <div>
       <header>
-        <h1>
+        <h1 className="w-100">
           <img
             src="https://www.wildcodeschool.com/assets/logo_main-e4f3f744c8e717f1b7df3858dce55a86c63d4766d5d9a7f454250145f097c2fe.png"
             alt="Wild Code School logo"
+            className="w-100"
           />
           Les Argonautes
         </h1>
@@ -100,18 +101,32 @@ function App() {
 
       <main className="container" style={{ marginTop: "3rem" }}>
         <h2>Ajouter un(e) Argonaute</h2>
-        <div className="new-member-form">
-          <label>Nom de l&apos;Argonaute</label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            placeholder="Charalampos"
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-          />
-          {error ? <p>minimum 3 caractères</p> : <p></p>}
+        <div className="new-member-form row">
+          <div className="col-12">
+            <label>Nom de l&apos;Argonaute</label>
+          </div>
+          <div className="col-12">
+            <input
+              className="form-control mx-auto"
+              placeholder="Charalampos"
+              aria-label="Charalampos"
+              id="name"
+              name="name"
+              type="text"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              style={{ width: "200px" }}
+            />
+            {error ? <p>minimum 3 caractères</p> : <p></p>}
+          </div>
+
           <button
+            className="btn btn-primary mx-auto"
+            style={{
+              backgroundColor: "#f76c6c",
+              borderColor: "#f76c6c",
+              width: "100px",
+            }}
             onClick={() => {
               setName(value);
               addUser(value);
@@ -132,7 +147,7 @@ function App() {
       </main>
 
       <footer className="fixed-bottom">
-        <p>Réalisé par Quentin en Anthestérion de l'an 515 avant JC</p>
+        <p>Réalisé par Jason et Quentin en Anthestérion de l'an 515 avant JC</p>
       </footer>
     </div>
   );
